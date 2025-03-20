@@ -87,7 +87,7 @@ const MapPage = () => {
           Undo Last Polygon
         </button>
       </div>
-      <div ref={mapRef} style={{ width: "80vw", height: "80vh", border: "2px solid black" }}></div>
+      <div ref={mapRef} style={{ width: "80vw", height: "70vh", border: "2px solid black" }}></div>
       <p style={{ color: "gray", fontSize: "14px", marginBottom: "10px" }}>
         ✏️ You can edit the polygon by dragging its sides.
       </p>
