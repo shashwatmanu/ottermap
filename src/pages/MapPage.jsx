@@ -16,7 +16,7 @@ const MapPage = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [isDrawing, setIsDrawing] = useState(false);
-  const [polygonStats, setPolygonStats] = useState([]); 
+  const [polygonStats, setPolygonStats] = useState([]);
 
   const mapRef = useRef(null);
   const drawRef = useRef(null);
@@ -40,8 +40,40 @@ const MapPage = () => {
 
     mapInstanceRef.current = map;
 
+    
     const modify = new Modify({ source: vectorSource });
+
+    
+    modify.on("modifyend", (event) => {
+      const modifiedFeatures = event.features.getArray();
+
+      setPolygonStats((prevStats) => {
+        const updatedStats = [...prevStats];
+
+        modifiedFeatures.forEach((feature) => {
+          const polygon = feature.getGeometry();
+          const featureId = feature.ol_uid; 
+
+          const index = updatedStats.findIndex((stat) => stat.id === featureId);
+          const newStats = {
+            id: featureId,
+            area: getArea(polygon),
+            perimeter: getLength(polygon.getLinearRing(0)),
+          };
+
+          if (index !== -1) {
+            updatedStats[index] = newStats; 
+          } else {
+            updatedStats.push(newStats); 
+          }
+        });
+
+        return updatedStats;
+      });
+    });
+
     const snap = new Snap({ source: vectorSource });
+
     map.addInteraction(modify);
     map.addInteraction(snap);
 
@@ -52,10 +84,10 @@ const MapPage = () => {
     if (!isDrawing) {
       const draw = new Draw({ source: vectorSourceRef.current, type: "Polygon" });
 
-     
       draw.on("drawend", (event) => {
         const polygon = event.feature.getGeometry();
-        addPolygonStats(polygon);
+        const featureId = event.feature.ol_uid; 
+        addPolygonStats(polygon, featureId);
       });
 
       mapInstanceRef.current.addInteraction(draw);
@@ -70,19 +102,19 @@ const MapPage = () => {
   const undoLastPolygon = () => {
     const features = vectorSourceRef.current.getFeatures();
     if (features.length > 0) {
-      vectorSourceRef.current.removeFeature(features[features.length - 1]);
+      const lastFeature = features[features.length - 1];
+      vectorSourceRef.current.removeFeature(lastFeature);
 
-
-      setPolygonStats((prevStats) => prevStats.slice(0, -1));
+      setPolygonStats((prevStats) => prevStats.filter((stat) => stat.id !== lastFeature.ol_uid));
     }
   };
 
-  const addPolygonStats = (polygon) => {
+  const addPolygonStats = (polygon, id) => {
     if (polygon instanceof Polygon) {
       const area = getArea(polygon);
       const perimeter = getLength(polygon.getLinearRing(0));
 
-      setPolygonStats((prevStats) => [...prevStats, { area, perimeter }]);
+      setPolygonStats((prevStats) => [...prevStats, { id, area, perimeter }]);
     }
   };
 
@@ -111,7 +143,7 @@ const MapPage = () => {
         </button>
       </div>
 
-      <div ref={mapRef} style={{ width: "80vw", height: "70vh", border: "2px solid black" }}></div>
+      <div ref={mapRef} style={{ width: "80vw", minHeight: "70vh", border: "2px solid black" }}></div>
 
       <p style={{ color: "gray", fontSize: "14px", marginBottom: "10px" }}>
         ✏️ You can edit the polygons by dragging their sides.
@@ -119,16 +151,14 @@ const MapPage = () => {
 
       {polygonStats.length > 0 && (
         <div style={{ marginTop: "10px", padding: "10px", borderRadius: "5px" }}>
-          <p><strong>Polygon Measurements:</strong></p>
+          <p><strong>👇🏼 Measurements:</strong></p>
           {polygonStats.map((stats, index) => (
-            <p key={index}>
+            <p key={stats.id}>
               🔹 <strong>Polygon {index + 1}:</strong> Perimeter: {stats.perimeter.toFixed(2)}m, Area: {stats.area.toFixed(2)}m²
             </p>
           ))}
         </div>
       )}
-
-     
     </div>
   );
 };
