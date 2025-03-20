@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import "ol/ol.css";
 import Map from "ol/Map";
 import View from "ol/View";
@@ -9,13 +9,17 @@ import { fromLonLat } from "ol/proj";
 import { Vector as VectorLayer } from "ol/layer";
 import { Vector as VectorSource } from "ol/source";
 import { Draw, Modify, Snap } from "ol/interaction";
+import { getArea, getLength } from "ol/sphere";
+import { Polygon } from "ol/geom";
 
 const MapPage = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [name, setName] = useState("");
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [polygonStats, setPolygonStats] = useState([]); 
+
   const mapRef = useRef(null);
   const drawRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
   const vectorSourceRef = useRef(null);
   const mapInstanceRef = useRef(null);
 
@@ -36,7 +40,6 @@ const MapPage = () => {
 
     mapInstanceRef.current = map;
 
-    
     const modify = new Modify({ source: vectorSource });
     const snap = new Snap({ source: vectorSource });
     map.addInteraction(modify);
@@ -48,6 +51,13 @@ const MapPage = () => {
   const toggleDrawing = () => {
     if (!isDrawing) {
       const draw = new Draw({ source: vectorSourceRef.current, type: "Polygon" });
+
+     
+      draw.on("drawend", (event) => {
+        const polygon = event.feature.getGeometry();
+        addPolygonStats(polygon);
+      });
+
       mapInstanceRef.current.addInteraction(draw);
       drawRef.current = draw;
     } else {
@@ -61,36 +71,64 @@ const MapPage = () => {
     const features = vectorSourceRef.current.getFeatures();
     if (features.length > 0) {
       vectorSourceRef.current.removeFeature(features[features.length - 1]);
+
+
+      setPolygonStats((prevStats) => prevStats.slice(0, -1));
+    }
+  };
+
+  const addPolygonStats = (polygon) => {
+    if (polygon instanceof Polygon) {
+      const area = getArea(polygon);
+      const perimeter = getLength(polygon.getLinearRing(0));
+
+      setPolygonStats((prevStats) => [...prevStats, { area, perimeter }]);
     }
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", height: "100vh", width:'100vw' }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", height: "100vh", width: "100vw" }}>
       <h1 style={{ textAlign: "center", margin: "20px 0" }}>{name || "User"}</h1>
+
       <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
-        <button 
-          onClick={() => navigate("/")} 
+        <button
+          onClick={() => navigate("/")}
           style={{ padding: "10px 15px", fontSize: "16px", cursor: "pointer", background: "red", color: "white" }}
         >
           ⬅ Back
         </button>
-        <button 
-          onClick={toggleDrawing} 
+        <button
+          onClick={toggleDrawing}
           style={{ padding: "10px 15px", fontSize: "16px", cursor: "pointer" }}
         >
           {isDrawing ? "Stop Drawing" : "Start Drawing a Polygon"}
         </button>
-        <button 
-          onClick={undoLastPolygon} 
+        <button
+          onClick={undoLastPolygon}
           style={{ padding: "10px 15px", fontSize: "16px", cursor: "pointer" }}
         >
           Undo Last Polygon
         </button>
       </div>
+
       <div ref={mapRef} style={{ width: "80vw", height: "70vh", border: "2px solid black" }}></div>
+
       <p style={{ color: "gray", fontSize: "14px", marginBottom: "10px" }}>
-        ✏️ You can edit the polygon by dragging its sides.
+        ✏️ You can edit the polygons by dragging their sides.
       </p>
+
+      {polygonStats.length > 0 && (
+        <div style={{ marginTop: "10px", padding: "10px", borderRadius: "5px" }}>
+          <p><strong>Polygon Measurements:</strong></p>
+          {polygonStats.map((stats, index) => (
+            <p key={index}>
+              🔹 <strong>Polygon {index + 1}:</strong> Perimeter: {stats.perimeter.toFixed(2)}m, Area: {stats.area.toFixed(2)}m²
+            </p>
+          ))}
+        </div>
+      )}
+
+     
     </div>
   );
 };
