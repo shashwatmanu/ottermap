@@ -1,13 +1,41 @@
-# React + Vite
+# Ottermap  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview  
+This is a simple React application built for the Ottermap frontend developer intern task. The app consists of two pages:  
 
-Currently, two official plugins are available:
+### 1. Form Page (First Route)  
+- A search bar (non-functional for now)  
+- A form with fields for **First Name** and **Mobile Number**  
+- Saves the form data in state  
+- Navigates to the second page upon submission  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 2. Map Page (Second Route)  
+- Displays the user's name in the center of the header  
+- Integrates **OpenLayers** for map functionality  
+- Allows users to **draw, edit, and delete polygons** on the map  
 
-## Expanding the ESLint configuration
+## Tech Stack  
+- **React** (Frontend framework)  
+- **React Router** (For navigation)  
+- **OpenLayers (ol)** (For map functionality)  
+- **Vercel** (For deployment)  
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# ottermap
+## Installation & Setup  
+
+```bash
+# Clone the repository
+git clone https://github.com/shashwatmanu/ottermap.git
+cd ottermap
+
+# Install dependencies
+npm install
+
+# Run the project
+npm start
+```
+
+## Live Demo  
+Check out the deployed version here:  
+
+🔗 [Ottermap Live](https://ottermap-pied.vercel.app/)  
+
