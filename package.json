@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "lottie-react": "^2.4.1",
+    "notistack": "^3.0.2",
     "ol": "^10.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
