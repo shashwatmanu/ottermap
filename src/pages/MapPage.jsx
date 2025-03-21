@@ -17,6 +17,7 @@ const MapPage = () => {
   const [name, setName] = useState("");
   const [isDrawing, setIsDrawing] = useState(false);
   const [polygonStats, setPolygonStats] = useState([]);
+  const [unit, setUnit] = useState("m²"); // Default unit: square meters
 
   const mapRef = useRef(null);
   const drawRef = useRef(null);
@@ -40,19 +41,16 @@ const MapPage = () => {
 
     mapInstanceRef.current = map;
 
-    
     const modify = new Modify({ source: vectorSource });
 
-    
     modify.on("modifyend", (event) => {
       const modifiedFeatures = event.features.getArray();
-
       setPolygonStats((prevStats) => {
         const updatedStats = [...prevStats];
 
         modifiedFeatures.forEach((feature) => {
           const polygon = feature.getGeometry();
-          const featureId = feature.ol_uid; 
+          const featureId = feature.ol_uid;
 
           const index = updatedStats.findIndex((stat) => stat.id === featureId);
           const newStats = {
@@ -62,9 +60,9 @@ const MapPage = () => {
           };
 
           if (index !== -1) {
-            updatedStats[index] = newStats; 
+            updatedStats[index] = newStats;
           } else {
-            updatedStats.push(newStats); 
+            updatedStats.push(newStats);
           }
         });
 
@@ -86,7 +84,7 @@ const MapPage = () => {
 
       draw.on("drawend", (event) => {
         const polygon = event.feature.getGeometry();
-        const featureId = event.feature.ol_uid; 
+        const featureId = event.feature.ol_uid;
         addPolygonStats(polygon, featureId);
       });
 
@@ -115,6 +113,28 @@ const MapPage = () => {
       const perimeter = getLength(polygon.getLinearRing(0));
 
       setPolygonStats((prevStats) => [...prevStats, { id, area, perimeter }]);
+    }
+  };
+
+  const convertArea = (area) => {
+    switch (unit) {
+      case "hectares":
+        return (area / 10000).toFixed(2) + " ha";
+      case "acres":
+        return (area / 4046.86).toFixed(2) + " acres";
+      case "km²":
+        return (area / 1e6).toFixed(2) + " km²";
+      default:
+        return area.toFixed(2) + " m²";
+    }
+  };
+
+  const convertPerimeter = (perimeter) => {
+    switch (unit) {
+      case "km":
+        return (perimeter / 1000).toFixed(2) + " km";
+      default:
+        return perimeter.toFixed(2) + " m";
     }
   };
 
@@ -151,10 +171,23 @@ const MapPage = () => {
 
       {polygonStats.length > 0 && (
         <div style={{ marginTop: "10px", padding: "10px", borderRadius: "5px" }}>
-          <p><strong>👇🏼 Measurements:</strong></p>
+          <p>
+            <strong>👇🏼 Measurements:</strong>
+            <select
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+              style={{ marginLeft: "10px", padding: "5px", fontSize: "14px" }}
+            >
+              <option value="m²">m²</option>
+              <option value="hectares">Hectares</option>
+              <option value="acres">Acres</option>
+              <option value="km²">km²</option>
+            </select>
+          </p>
+
           {polygonStats.map((stats, index) => (
             <p key={stats.id}>
-              🔹 <strong>Polygon {index + 1}:</strong> Perimeter: {stats.perimeter.toFixed(2)}m, Area: {stats.area.toFixed(2)}m²
+              🔹 <strong>Polygon {index + 1}:</strong> Perimeter: {convertPerimeter(stats.perimeter)} | Area: {convertArea(stats.area)}
             </p>
           ))}
         </div>
