@@ -17,7 +17,7 @@ const MapPage = () => {
   const [name, setName] = useState("");
   const [isDrawing, setIsDrawing] = useState(false);
   const [polygonStats, setPolygonStats] = useState([]);
-  const [unit, setUnit] = useState("m²"); // Default unit: square meters
+  const [unit, setUnit] = useState("m²"); 
 
   const mapRef = useRef(null);
   const drawRef = useRef(null);
@@ -131,7 +131,7 @@ const MapPage = () => {
 
   const convertPerimeter = (perimeter) => {
     switch (unit) {
-      case "km":
+      case "km²":
         return (perimeter / 1000).toFixed(2) + " km";
       default:
         return perimeter.toFixed(2) + " m";
