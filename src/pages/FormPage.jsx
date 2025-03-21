@@ -54,7 +54,7 @@ const FormPage = () => {
           borderRadius: "100px",
           border: "none",
           position: "absolute",
-          top: "5%",
+          top: "4%",
           left: "50%",
           transform: "translateX(-50%)",
         }}
@@ -65,7 +65,7 @@ const FormPage = () => {
             color: "gray",
             fontSize: "14px",
             position: "absolute",
-            top: "10%",
+            top: "8%",
             left: "50%",
             transform: "translateX(-50%)",
           }}
