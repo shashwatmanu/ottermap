@@ -99,9 +99,10 @@ const FormPage = () => {
         <br />
         <br />
 
-        <div style={{ display: "flex", justifySelf: "center", alignItems: "center" }}>
+        <div style={{ display: "flex", justifySelf: "center", alignItems: "center", justifyContent:'center' }}>
           <button type="submit" style={{ height: "4rem", width: "12rem", marginRight: "1rem" }}>Go to Map</button>
           <h1>🗺️</h1>
+          
         </div>
       </form>
     </div>

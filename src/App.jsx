@@ -5,7 +5,7 @@ function App() {
   return (
     <>
      <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
-  <AppRoutes />;
+  <AppRoutes />
   </SnackbarProvider>
   </>
   )
