@@ -38,7 +38,7 @@ const FormPage = () => {
 
   return (
     <div style={{ textAlign: "center", width: "100vw" }}>
-      <div style={{ height: "300px", display: "flex", justifyContent: "center", width: "100%" }}>
+      <div style={{ height: "15rem", display: "flex", justifyContent: "center", width: "100%" }}>
         <Lottie animationData={animationData} loop={true} />
        
       </div>
