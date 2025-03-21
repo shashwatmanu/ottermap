@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack"; // ✅ Import Notistack
 import Lottie from "lottie-react";
 import animationData from "../assets/earthAnimation.json";
+import "./formpage.css";
 
 const FormPage = () => {
   const [formData, setFormData] = useState({ name: "", mobile: "" });
@@ -37,9 +38,11 @@ const FormPage = () => {
 
   return (
     <div style={{ textAlign: "center", width: "100vw" }}>
-      <div style={{ width: "300px", height: "300px", display: "flex", justifyContent: "center", width: "100%" }}>
+      <div style={{ height: "300px", display: "flex", justifyContent: "center", width: "100%" }}>
         <Lottie animationData={animationData} loop={true} />
+       
       </div>
+      
 
       <input
         type="text"
@@ -105,6 +108,9 @@ const FormPage = () => {
           
         </div>
       </form>
+      <div style={{display:'flex', justifyContent:'flex-end', width:'100%', position:'absolute', bottom:'0px'}}>
+        <h4 style={{margin:'1rem'}} className="sign">Shashwat Manu</h4>
+      </div>
     </div>
   );
 };
